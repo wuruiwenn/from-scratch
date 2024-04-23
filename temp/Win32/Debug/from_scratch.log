@@ -1,0 +1,3 @@
+﻿  main.cpp
+e:\mycomputer\vs2017_projects\from_scratch\from_scratch\src\main.cpp(7): warning C4930: “wrw::unique_ptr<Entity> sp(void)”: 未调用原型函数(是否是有意用变量定义的?)
+  from_scratch.vcxproj -> E:\myComputer\VS2017_projects\from_scratch\bin\Win32\Debug\from_scratch.exe
