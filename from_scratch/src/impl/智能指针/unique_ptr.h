@@ -38,12 +38,21 @@ namespace wrw
 		}
 
 		//移动构造函数
+		//移动构造，接收内容的对象(就是this)是空的，没有初始化的
+		//移动构造，最大区别就是和 拷贝构造，移动构造并不拷贝
+		//目标对象在这个场景下，移动，就是要转移控制权，
+		//移动前后，新旧控制方都是绑定的同一个目标对象，
+		//所以肯定不能对原始的控制方进行delete，否则目标对象也会被释放
+		//且但凡是"移动"，则旧的控制方一定要置空 ，即nullptr
 		unique_ptr(unique_ptr&& other) noexcept {
 			this->obj = other.obj;
 			other.obj = nullptr;
 		}
 
 		//移动=赋值运算符
+		//赋值运算，接收内容的对象(就是this)是已经有绑定旧的目标对象的，=赋值，就是要绑定新的目标对象
+		//所以this的内容就是所控制的旧的资源，是需要delete的
+		//且但凡是"移动"，则旧的控制方一定要置空 ，即nullptr
 		unique_ptr& operator=(unique_ptr&& other) noexcept {
 			if (this != &other) {//如果不是同一个对象才..，避免自赋值
 				delete obj;//接管新的资源之前，要把之前的资源释放掉
@@ -78,7 +87,8 @@ namespace wrw
 			return tmp;
 		}
 
-		//允许unique_ptr的对象隐式转换为一个bool类型 ，if(up){}
+		//允许unique_ptr的对象隐式转换为一个bool类型 ，让if(up){}成为可能
+		//【这个待深入】
 		operator bool() {
 			return obj != nullptr;
 		}
@@ -86,6 +96,10 @@ namespace wrw
 		//reset()：释放所持有的目标对象，可接受一个可选的参数，就是即将要接管的新的目标对象的指针
 		//可选参数，就是带默认值
 		void reset(T* ptr = nullptr) {
+			//这里或许要判断2个点：
+				//（1）是不是传入了新的指针 
+				//（2）传入的目标对象是不是就是当前已经控制的同一个目标对象
+			//但其实，下面这样写就能满足这2个判断
 			if (obj == ptr) {//如果传入的就是当前持有的目标对象，无需做任何操作
 
 			}
@@ -96,8 +110,8 @@ namespace wrw
 		}
 
 		// 删除 拷贝构造函数 和 "="赋值操作符，禁止复制
-		unique_ptr& operator=(const unique_ptr& other) = delete;
 		unique_ptr(const unique_ptr& other) = delete;
+		unique_ptr& operator=(const unique_ptr& other) = delete;
 
 		template<class T>//友元，这里要 重新声明 模板，因为友元并不属于类内成员，它不能享有最开始声明的模板
 		friend std::ostream& operator<<(std::ostream& out, const unique_ptr<T>& up);
