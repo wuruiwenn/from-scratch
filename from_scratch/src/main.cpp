@@ -3,7 +3,11 @@
 #include"./impl/ÖÇÄÜÖ¸Õë/unique_ptr.h"
 
 int main() {
-	//std::cout << 1;
-	wrw::unique_ptr<Entity> sp();
-	std::unique_ptr<Entity> up;
+	
+	Entity* e = new Entity(12);
+	wrw::unique_ptr<Entity> up(e);
+	cout << "e = " << e << endl;
+	cout << "up = " << up << endl;
+
+	//´ı²âÊÔ
 }
