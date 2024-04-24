@@ -140,6 +140,8 @@
   <ItemGroup>
     <ClInclude Include="src\impl\type_traits\type_traits.h" />
     <ClInclude Include="src\impl\智能指针\unique_ptr.h" />
+    <ClInclude Include="src\type_traits\type_traits.h" />
+    <ClInclude Include="src\智能指针\unique_ptr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

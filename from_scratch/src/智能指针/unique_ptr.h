@@ -20,12 +20,12 @@ std::ostream& operator<<(std::ostream& out, const Entity& obj) {
 }
 namespace wrw
 {
+	//智能指针，本质是一个class template
 	template<class T>
 	class unique_ptr {
 	private:
-		T* obj;
+		T* obj;//用于绑定目标对象的指针
 	public:
-
 		//构造函数
 		unique_ptr() :obj(nullptr) {
 		}
@@ -36,6 +36,10 @@ namespace wrw
 		~unique_ptr() {
 			delete obj;
 		}
+
+		// 删除 拷贝构造函数 和 "="赋值操作符，禁止 拷贝
+		unique_ptr(const unique_ptr& other) = delete;
+		unique_ptr& operator=(const unique_ptr& other) = delete;
 
 		//移动构造函数
 		//移动构造，接收内容的对象(就是this)是空的，没有初始化的
@@ -83,7 +87,7 @@ namespace wrw
 		T* release() {
 			T* tmp = obj;
 			//delete obj; 不能用delete，否则目标对象本身会被释放
-			obj = nullptr;//让当前智能指针不再持有该目标对象即可
+			obj = nullptr;//让当前智能指针指向空，即不再指向该目标对象
 			return tmp;
 		}
 
@@ -109,9 +113,7 @@ namespace wrw
 			}
 		}
 
-		// 删除 拷贝构造函数 和 "="赋值操作符，禁止复制
-		unique_ptr(const unique_ptr& other) = delete;
-		unique_ptr& operator=(const unique_ptr& other) = delete;
+		
 
 		template<class T>//友元，这里要 重新声明 模板，因为友元并不属于类内成员，它不能享有最开始声明的模板
 		friend std::ostream& operator<<(std::ostream& out, const unique_ptr<T>& up);

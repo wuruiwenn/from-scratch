@@ -1,7 +1,7 @@
 
 #include<iostream>
-#include"./impl/智能指针/unique_ptr.h"
-#include"./impl/type_traits/type_traits.h"
+#include"./智能指针/unique_ptr.h"
+#include"./type_traits/type_traits.h"
 
 int main() {
 	//using namespace wrw;

@@ -21,6 +21,12 @@
     <ClInclude Include="src\impl\type_traits\type_traits.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\type_traits\type_traits.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\智能指针\unique_ptr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
