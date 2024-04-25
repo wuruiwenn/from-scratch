@@ -15,7 +15,9 @@ public:
 	friend std::ostream& operator<<(std::ostream& out, const Entity& obj);
 };
 std::ostream& operator<<(std::ostream& out, const Entity& obj) {
-	out << "[Entity: " << obj.id << "]\n";
+	if (&obj) {//对象空，则不打印任何东西
+		out << "[Entity: " << obj.id << "]\n";
+	}
 	return out;
 }
 namespace wrw
@@ -92,8 +94,7 @@ namespace wrw
 		}
 
 		//允许unique_ptr的对象隐式转换为一个bool类型 ，让if(up){}成为可能
-		//【这个待深入】
-		operator bool() {
+		explicit operator bool() {
 			return obj != nullptr;
 		}
 
@@ -103,24 +104,41 @@ namespace wrw
 			//这里或许要判断2个点：
 				//（1）是不是传入了新的指针 
 				//（2）传入的目标对象是不是就是当前已经控制的同一个目标对象
-			//但其实，下面这样写就能满足这2个判断
-			if (obj == ptr) {//如果传入的就是当前持有的目标对象，无需做任何操作
 
+			/*if (ptr == nullptr) {
+				delete obj;
 			}
 			else {
-				delete obj;//接管新的目标对象之前，旧资源要释放掉
+				if (ptr == obj) {
+
+				}
+				else {
+					delete obj;
+					obj = ptr;
+				}
+			}*/
+
+			//delete obj;
+			//obj = nullptr;//避免源对象的指针被delete多次
+			//if (ptr) {
+			//	obj = ptr;
+			//}
+
+			//更简洁写法
+			if (obj != ptr) {
+				delete obj;
 				obj = ptr;
 			}
 		}
-
-		
 
 		template<class T>//友元，这里要 重新声明 模板，因为友元并不属于类内成员，它不能享有最开始声明的模板
 		friend std::ostream& operator<<(std::ostream& out, const unique_ptr<T>& up);
 	};
 	template<class T>
 	std::ostream& operator<<(std::ostream& out, const unique_ptr<T>& up) {
-		out << up.get();//std::unique_ptr中对于"<<"的重载，是把 get()送入输出流，本质就是 obj
+		if (up.get()) {
+			out << up.get();//std::unique_ptr中对于"<<"的重载，是把 get()送入输出流，本质就是 obj
+		}
 		return out;
 	}
 }
