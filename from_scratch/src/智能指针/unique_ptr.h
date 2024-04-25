@@ -17,7 +17,9 @@ public:
 std::ostream& operator<<(std::ostream& out, const Entity& obj) {
 	if (&obj) {//对象空，则不打印任何东西
 		out << "[Entity: " << obj.id << "]\n";
+		return out;
 	}
+	out << "[]\n";
 	return out;
 }
 namespace wrw
@@ -118,17 +120,22 @@ namespace wrw
 				}
 			}*/
 
-			//delete obj;
-			//obj = nullptr;//避免源对象的指针被delete多次
-			//if (ptr) {
-			//	obj = ptr;
-			//}
-
-			//更简洁写法
-			if (obj != ptr) {
-				delete obj;
+			delete obj;
+			obj = nullptr;//避免源对象的指针被delete多次
+			if (ptr) {
 				obj = ptr;
 			}
+
+			//更简洁写法
+			/*if (obj != ptr) {
+				delete obj;
+				obj = ptr;
+			}*/
+		}
+		void swap(unique_ptr& other) {
+			T* tmp = this->obj;
+			this->obj = other.obj;
+			other.obj = tmp;
 		}
 
 		template<class T>//友元，这里要 重新声明 模板，因为友元并不属于类内成员，它不能享有最开始声明的模板

@@ -33,8 +33,9 @@ int main() {
 	Entity* e = new Entity(12);
 	Entity* e2 = new Entity(24);
 
-	std::unique_ptr<Entity> up1(e);
-	std::unique_ptr<Entity> up2(e2);
+	wrw::unique_ptr<Entity> up1(e);
+	up1.reset();
+	wrw::unique_ptr<Entity> up2(e2);
 	cout << "*e = " << *e;
 	cout << "*up1 = " << *up1;
 	cout << "*up2 = " << *up2;
