@@ -18,7 +18,14 @@ std::ostream& operator<<(std::ostream& out, const User& u) {
 }
 int main() {
 
-	using namespace wrw;
+	Entity* e = new Entity(12);
+	//Entity* e2 = new Entity(24);
+	wrw::unique_ptr<Entity> p(e);
+	p.reset();
+	//using namespace wrw;
+	//wrw::unique_ptr<Entity> up;
+	//wrw::unique_ptr<Entity> up1();
+	//wrw::unique_ptr<Entity> up2(new Entity(9));
 
 	//≤‚ ‘type_traits.h
 	//cout << wrw::is_int<int>::value << endl;
@@ -30,7 +37,7 @@ int main() {
 	//wrw::unique_ptr<Entity> up(e);
 	//cout << "e = " << e << endl;
 	//cout << "up = " << up << endl;
-	Entity* e = new Entity(12);
+	/*Entity* e = new Entity(12);
 	Entity* e2 = new Entity(24);
 
 	wrw::unique_ptr<Entity> up1(e);
@@ -45,7 +52,7 @@ int main() {
 	cout << "*e = " << *e;
 	cout << "*up1 = " << *up1;
 	cout << "*up2 = " << *up2;
-	cout << "*e2 = " << *e2;
+	cout << "*e2 = " << *e2;*/
 	/*wrw::unique_ptr<Entity> up(e);
 	up.reset();*/
 

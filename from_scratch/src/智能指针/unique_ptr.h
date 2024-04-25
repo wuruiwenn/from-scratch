@@ -32,12 +32,15 @@ namespace wrw
 	public:
 		//构造函数
 		unique_ptr() :obj(nullptr) {
+			cout << "unique_ptr 无参构造.\n";
 		}
 		unique_ptr(T* ptr) :obj(ptr) {
+			cout << "unique_ptr 有参构造.\n";
 		}
 
 		//析构函数
 		~unique_ptr() {
+			cout << "~unique_ptr 析构.\n";
 			delete obj;
 		}
 
@@ -65,11 +68,15 @@ namespace wrw
 			if (this != &other) {//如果不是同一个对象才..，避免自赋值
 				delete obj;//接管新的资源之前，要把之前的资源释放掉
 				this->obj = other.obj;
-				other.obj = nullptr;
+				//other.obj = nullptr;
 			}
+			other.obj = nullptr;
 			return *this;
 		}
 
+		//只要是，移动构造/赋值，被移动的源智能指针肯定是需要置nullptr的
+		//但是不能delete，因为新旧智能指针指向的是同一目标对象，
+		//只是移动后，旧的智能指针不再管理它了
 
 		//解引用*运算符
 		T& operator*() {
@@ -95,11 +102,6 @@ namespace wrw
 			return tmp;
 		}
 
-		//允许unique_ptr的对象隐式转换为一个bool类型 ，让if(up){}成为可能
-		explicit operator bool() {
-			return obj != nullptr;
-		}
-
 		//reset()：释放所持有的目标对象，可接受一个可选的参数，就是即将要接管的新的目标对象的指针
 		//可选参数，就是带默认值
 		void reset(T* ptr = nullptr) {
@@ -119,9 +121,8 @@ namespace wrw
 					obj = ptr;
 				}
 			}*/
-
 			delete obj;
-			obj = nullptr;//避免源对象的指针被delete多次
+			obj = nullptr;//避免目标对象被delete多次，因为当前智能指针对象是栈对象，出了main作用域后，析构时也会delete obj;那么obj如果还指向目标对象则会再次delete，而实际当前智能指针绑定的目标对象本身e并不会析构，因为在main中是堆对象
 			if (ptr) {
 				obj = ptr;
 			}
@@ -136,6 +137,11 @@ namespace wrw
 			T* tmp = this->obj;
 			this->obj = other.obj;
 			other.obj = tmp;
+		}
+
+		//允许unique_ptr的对象隐式转换为一个bool类型 ，让if(up){}成为可能
+		explicit operator bool() {
+			return obj != nullptr;
 		}
 
 		template<class T>//友元，这里要 重新声明 模板，因为友元并不属于类内成员，它不能享有最开始声明的模板
