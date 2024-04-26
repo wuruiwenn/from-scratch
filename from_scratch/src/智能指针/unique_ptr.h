@@ -68,7 +68,7 @@ namespace wrw
 			if (this != &other) {//如果不是同一个对象才..，避免自赋值
 				delete obj;//接管新的资源之前，要把之前的资源释放掉
 				this->obj = other.obj;
-				//other.obj = nullptr;
+				//other.obj = nullptr;移动赋值，并不会影响源智能指针控制的对象
 			}
 			other.obj = nullptr;
 			return *this;
@@ -95,6 +95,7 @@ namespace wrw
 		}
 
 		//release()：返回绑定对象的原始指针，并将智能指针的控制权置空
+		//控制权置空：就是解除绑定(nullptr)，但并不销毁目标对象(delete)
 		T* release() {
 			T* tmp = obj;
 			//delete obj; 不能用delete，否则目标对象本身会被释放
@@ -104,6 +105,8 @@ namespace wrw
 
 		//reset()：释放所持有的目标对象，可接受一个可选的参数，就是即将要接管的新的目标对象的指针
 		//可选参数，就是带默认值
+		//reset和release区别就在于：release不去销毁目标对象，而仅是解除绑定
+		//而reset不仅要解除绑定，还要销毁目标对象
 		void reset(T* ptr = nullptr) {
 			//这里或许要判断2个点：
 				//（1）是不是传入了新的指针 
@@ -121,8 +124,14 @@ namespace wrw
 					obj = ptr;
 				}
 			}*/
+			//reset()就是2步：
+			//（1）取消绑定，且智能指针原绑定的目标对象delete掉
+			//（2）如果传入新的目标对象，则继续重新绑定
 			delete obj;
-			obj = nullptr;//避免目标对象被delete多次，因为当前智能指针对象是栈对象，出了main作用域后，析构时也会delete obj;那么obj如果还指向目标对象则会再次delete，而实际当前智能指针绑定的目标对象本身e并不会析构，因为在main中是堆对象
+			obj = nullptr;//尤为重要，不再指向原绑定的目标
+			// 避免目标对象被delete多次，因为当前智能指针对象是栈对象，出了main作用域后，会自动执行析构，而析构时也会delete obj;那么obj如果还指向目标对象则会再次delete。
+			// 把obj置空，则未来智能指针栈对象自动析构时执行delete obj，则不会指向目标对象e进行销毁
+			//【另一方面，对于实际当前智能指针绑定的目标对象本身e，并不会析构，因为在main中是堆对象】
 			if (ptr) {
 				obj = ptr;
 			}

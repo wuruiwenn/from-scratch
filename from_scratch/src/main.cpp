@@ -18,10 +18,10 @@ std::ostream& operator<<(std::ostream& out, const User& u) {
 }
 int main() {
 
-	Entity* e = new Entity(12);
-	//Entity* e2 = new Entity(24);
-	wrw::unique_ptr<Entity> p(e);
-	p.reset();
+	//Entity* e = new Entity(12);
+	////Entity* e2 = new Entity(24);
+	//wrw::unique_ptr<Entity> p(e);
+	//p.reset();
 	//using namespace wrw;
 	//wrw::unique_ptr<Entity> up;
 	//wrw::unique_ptr<Entity> up1();
@@ -62,4 +62,10 @@ int main() {
 	//std::unique_ptr<Entity> up(e);
 	//up.reset();
 	//cout << "*up = " << *up;
+	Entity* e = new Entity(2);
+	cout << "*e = " << *e;
+	std::unique_ptr<Entity> up(e);
+	up.reset();
+	cout << "*e = " << *e;
+	cout << "*up="<<*up;
 }
