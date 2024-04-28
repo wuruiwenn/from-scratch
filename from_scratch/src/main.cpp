@@ -22,12 +22,13 @@ std::ostream& operator<<(std::ostream& out, const User& u) {
 int main() {
 	using namespace wrw;
 	SingleList* s = new SingleList();
-	s->addLast(1);
-	s->addLast(3);
-	s->addLast(3);
-	s->addLast(3);
-	s->removeVal(3);
+	for (int i = 1; i <= 5; i++)
+	{
+		s->addLast(i);
+	}
 	cout << *s;
-	cout << "size = " << s->GetSize();
+	cout << "reverse...\n";
+	s->reverse();
+	cout << *s;
 
 }

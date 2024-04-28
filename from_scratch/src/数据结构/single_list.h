@@ -66,6 +66,18 @@ namespace wrw
 		void removeLast() {
 			//removeVal();
 		}
+		//反转链表
+		void reverse() {
+			Node* p = head;
+			Node* tmp = nullptr;
+			while (p != nullptr) {
+				Node* remNext = p->next;//先记住当前节点的下一个
+				p->next = tmp;
+				tmp = p;
+				p = remNext;
+			}
+			head = tmp;
+		}
 		int GetSize() {
 			return size;
 		}
