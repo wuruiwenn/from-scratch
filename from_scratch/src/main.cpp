@@ -1,7 +1,9 @@
 
 #include<iostream>
-#include"./智能指针/unique_ptr.h"
 #include"./type_traits/type_traits.h"
+#include"./智能指针/unique_ptr.h"
+#include"./单例模式/single.h"
+#include"./数据结构/single_list.h"
 
 class User {
 	int id;
@@ -16,11 +18,16 @@ std::ostream& operator<<(std::ostream& out, const User& u) {
 	out << "[user:" << u.id << "]\n";
 	return out;
 }
-#include"./单例模式/single.h"
-int main() {
 
-	Single* s1 = Single::GetIns();
-	Single* s2 = Single::GetIns();
-	cout << s1 << endl;//00007FF65CF6E160
-	cout << s2 << endl;//00007FF65CF6E160
+int main() {
+	using namespace wrw;
+	SingleList* s = new SingleList();
+	s->addLast(1);
+	s->addLast(3);
+	s->addLast(3);
+	s->addLast(3);
+	s->removeVal(3);
+	cout << *s;
+	cout << "size = " << s->GetSize();
+
 }
