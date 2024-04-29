@@ -38,10 +38,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\单例模式\single.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\单例模式\single.cpp">
+    <ClCompile Include="src\test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

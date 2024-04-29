@@ -147,7 +147,7 @@
     <ClInclude Include="src\智能指针\unique_ptr.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\单例模式\single.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
