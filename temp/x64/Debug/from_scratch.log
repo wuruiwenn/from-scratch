@@ -1,5 +1,1 @@
-﻿  test.cpp
-e:\mycomputer\vs2017_projects\from_scratch\from_scratch\src\数据结构\string.h(20): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-  single.cpp
-  正在生成代码...
-  from_scratch.vcxproj -> E:\myComputer\VS2017_projects\from_scratch\bin\x64\Debug\from_scratch.exe
+﻿

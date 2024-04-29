@@ -5,7 +5,8 @@
 #include<string>
 namespace wrw
 {
-	class String {
+	class String 
+	{
 	private:
 		char* m_buffer;
 		int m_size;
@@ -31,7 +32,8 @@ namespace wrw
 		//正是通过传进来的目标对象进行构造
 		String(const String& s) {
 			int n = s.m_size;
-			this->m_buffer = new char[n+1];
+			//this->m_buffer = s.m_buffer;//拷贝构造默认是这样，但是这是浅拷贝，浅拷贝的话，在目标对象，当前对象析构时，都会delete m_buffer，造成统一内存被多次delete
+			this->m_buffer = new char[n+1];//深拷贝
 			this->m_size = n;
 			for (int i = 0; i < n; i++) {
 				m_buffer[i] = s.m_buffer[i];
@@ -44,8 +46,12 @@ namespace wrw
 		// = 赋值运算符调用时机：当前对象，即this已经被初始化了，
 		// 等待传入的目标对象覆盖自己
 		String& operator=(const String& s){
+			if (&s == this) {//如果是同一个对象
+				return *this;
+			}
 			int n = s.m_size;
 			this->m_size = n;
+			//this->m_buffer = s.m_buffer;//这样会造成 浅拷贝多次 delete同一内存问题
 			//this->m_buffer = new char[n + 1];//此时当前对象是已经初始化了的，不必重新初始化
 			//只需覆盖
 			for (int i = 0; i < n; i++) {
