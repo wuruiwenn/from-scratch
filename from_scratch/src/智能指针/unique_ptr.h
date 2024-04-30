@@ -66,11 +66,11 @@ namespace wrw
 		//且但凡是"移动"，则旧的控制方一定要置空 ，即nullptr
 		unique_ptr& operator=(unique_ptr&& other) noexcept {
 			if (this != &other) {//如果不是同一个对象才..，避免自赋值
-				delete obj;//接管新的资源之前，要把之前的资源释放掉
+				delete obj;//接管新的资源之前，要把之前的资源释放掉，这是移动赋值运算符和移动构造的代码上的唯一区别
 				this->obj = other.obj;
-				//other.obj = nullptr;移动赋值，并不会影响源智能指针控制的对象
+				other.obj = nullptr;
 			}
-			other.obj = nullptr;
+			//other.obj = nullptr;
 			return *this;
 		}
 
@@ -112,36 +112,29 @@ namespace wrw
 				//（1）是不是传入了新的指针 
 				//（2）传入的目标对象是不是就是当前已经控制的同一个目标对象
 
-			/*if (ptr == nullptr) {
-				delete obj;
+			if (this->obj == ptr) {//如果当前已经绑定的对象 和 需要重新绑定的对象是同一个，则略过
+				return;
 			}
-			else {
-				if (ptr == obj) {
-
-				}
-				else {
-					delete obj;
-					obj = ptr;
-				}
-			}*/
-			//reset()就是2步：
+			
+			//reset()目的就是2步：
 			//（1）取消绑定，且智能指针原绑定的目标对象delete掉
 			//（2）如果传入新的目标对象，则继续重新绑定
 			delete obj;
-			obj = nullptr;//尤为重要，不再指向原绑定的目标
-			// 避免目标对象被delete多次，因为当前智能指针对象是栈对象，出了main作用域后，会自动执行析构，而析构时也会delete obj;那么obj如果还指向目标对象则会再次delete。
-			// 把obj置空，则未来智能指针栈对象自动析构时执行delete obj，则不会指向目标对象e进行销毁
-			//【另一方面，对于实际当前智能指针绑定的目标对象本身e，并不会析构，因为在main中是堆对象】
+			/*obj = nullptr;
 			if (ptr) {
 				obj = ptr;
-			}
-
-			//更简洁写法
-			/*if (obj != ptr) {
-				delete obj;
-				obj = ptr;
 			}*/
+			//obj = nullptr；尤为重要，不再指向原绑定的目标,obj = nullptr
+			//若 没有传入新的目标对象，即ptr == nullptr，则在reset()函数内部delete obj了
+			//那么当前对象，即智能指针对象出作用域被销毁的时候，会再次delete obj，造成 同一块内存的 double deletion
+			//所以这种情况下，比如 obj = nullptr;避免double delete
+			//而若传入了新的目标对象，即ptr!=nullptr，由于你将对obj进行新的绑定，因此，无需执行 obj = nullptr，obj自然会进行新的初始化
+			
+			//所以，这2步可以直接合为1步
+			obj = ptr;
+
 		}
+		//交换2个智能指针的控制目标
 		void swap(unique_ptr& other) {
 			T* tmp = this->obj;
 			this->obj = other.obj;
