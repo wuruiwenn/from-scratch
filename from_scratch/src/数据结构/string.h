@@ -35,19 +35,19 @@ namespace wrw
 		//正是通过传进来的目标对象进行构造
 		String(const String& s) {
 			/*
-				拷贝构造默认是这样，但是这是浅拷贝，浅拷贝的话，
-				在目标对象，当前对象析构时，都会delete m_buffer，
+			默认 拷贝构造，是浅拷贝：
+			this->m_size = s.m_size;
+			this->m_buffer = s.m_buffer; 仅这样,拷贝得到的是同一个地址
+				
+			1、浅拷贝，在目标对象，当前对象析构时，都会delete m_buffer，
 				造成统一内存被多次delete
+			2、浅拷贝，并不需要for依次每个字符赋值了，
+			因为m_buffer就是首地址，且源对象最后字符初始化为\0了，
+			所以拷贝后的对象也会自动停止，也即知道完整的字符串在哪
+			3、深拷贝后，是一定需要for依次给每个字符赋值的，因为深拷贝，相当于是在
+			一个新的地址上操作，内容是空的，并没有源对象的字符串内容存在
 			*/
-			//this->m_size = s.m_size;
-			//this->m_buffer = s.m_buffer; 仅这样,拷贝得到的是同一个地址
-			//for()...依次赋值每个字符
-			//【不过，浅拷贝，我觉得并不需要for依次每个字符赋值了，
-			//因为m_buffer就是首地址，拷贝了，因为源对象最后字符初始化为\0了，
-			//所以拷贝后的对象也会自动停止，也即知道完整的字符串在哪】
-			//【深拷贝后，是一定需要for依次给每个字符赋值的，因为深拷贝，相当于是在
-			//一个新的地址上操作，内容是空的，并没有源对象的字符串内容存在】
-
+			//深拷贝
 			int n = s.m_size;
 			this->m_size = n;
 			this->m_buffer = new char[n+1];//深拷贝，就是new一个新的地址
@@ -62,14 +62,19 @@ namespace wrw
 		// = 赋值运算符调用时机：当前对象，即this已经被初始化了，
 		// 等待传入的目标对象覆盖自己
 		String& operator=(const String& s){
-			if (&s == this) {//如果是同一个对象
+			if (&s == this) {//如果是同一个对象，则直接return
 				return *this;
 			}
+			/*由于=赋值运算符调用时机是：当前对象this已经被初始化
+			所以，只需用other的内容对this，使用for对各字符依次覆盖即可
+			
+			但要注意 源字符串和this，可能长度不一样，需要使用源字符串的长度进行覆盖
+			因此仍需 new char[] 重新分配符合源字符串大小的数组宽度，
+			并且最后要处理结束符\0*/
 
 			this->m_size = s.m_size;
 			int n = this->m_size;
-			//this->m_buffer = s.m_buffer;//这样会造成 浅拷贝多次 delete同一内存问题
-			//this->m_buffer = new char[n + 1];
+			this->m_buffer = new char[n + 1];
 			//此时当前对象是已经初始化了的，不必重新初始化new char[]
 			//只需用for直接覆盖内容即可
 			for (int i = 0; i < n; i++) {
@@ -81,24 +86,18 @@ namespace wrw
 		}
 
 		//移动构造函数
-		//把目标对象s的内容转移到this
-		//移动构造 调用时机：当前对象this此时还未被构造，且传入的目标对象是 右值
-
-		//移动构造和拷贝构造有一点是相同的：即当前对象this还未构建，所以需要new char[]初始化内存
+		//移动构造和拷贝构造的区别就是：移动构造需要额外把源对象置nullptr
+		//且当前对象this仍未初始化，所以需要new char[]初始化内存
 		String(String&& s) {
-			int n = s.m_size;
-			this->m_size = n;
 			
-			//移动构造，这里可以实现浅拷贝：m_buffer = other.m_buffer，
-			//而且我觉得C++类的默认的移动构造，也应该就是类似浅拷贝+源对象置nullptr的
-			//因为，源对象，other.m_buffer终将被置nullptr，不会存在多次delete同一内存问题
-			//那这样的话，m_buffer也无需用for覆盖，直接覆盖 m_buffer即可。
-			//this->m_buffer = new char[n + 1];
-			//for (int i = 0; i < n; i++) {//目标对象的内容移动到this
-			//	this->m_buffer[i] = s.m_buffer[i];
-			//}
-			//this->m_buffer[n] = '\0';
-			this->m_buffer = s.m_buffer;
+			this->m_size = s.m_size;
+			int n = m_size;
+			
+			m_buffer = new char[m_size + 1];
+			for (int i = 0; i < m_size; i++) {
+				m_buffer[i] = s.m_buffer[i];
+			}
+			m_buffer[m_size] = '\0';
 
 			//为了表达是"移动"，而非"拷贝"，源目标对象要"置空"
 			s.m_buffer = nullptr;
@@ -108,26 +107,24 @@ namespace wrw
 		}
 
 		//移动 = 赋值运算符
-		//移动=赋值运算符和拷贝=赋值运算符有一点是相同的：当前对象this已经被初始化了，所以无需new char[]
-		//当然也可以 m_buffer = other.m_buffer，因为other.m_buffer终将被nullptr，不会产生多次delete 同一内存问题
-		//但这并不符合"移动"理念，移动应该是源对象所有东西都移动到this上，包括m_buffer
-		String& operator=(String&& s) {
-			if (&s == this) {
-				return *this;//如果是同一个对象，直接返回
+		//=赋值运算符调用时机是：当前对象this已经初始化了
+		//因此只需使用源对象的内容，对this进行覆盖即可，然后源对象置nullptr
+		//但要注意源对象和this字符串长度可能不一样，因而需要重新分配内存 new char[]
+		String& operator=(String&& other) {
+			if (&other == this) {
+				return *this;
 			}
-			int n = s.m_size;
-			this->m_size = n;
-
-			//this->m_buffer = new char[n + 1];
-			/*for (int i = 0; i < n; i++) {
-				this->m_buffer[i] = s.m_buffer[i];
+			m_size = other.m_size;
+			m_buffer = new char[m_size + 1];
+			for (int i = 0; i < m_size; i++) {
+				m_buffer[i] = other.m_buffer[i];
 			}
-			this->m_buffer[n] = '\0';*/
-			this->m_buffer = s.m_buffer;
+			m_buffer[m_size] = '\0';
 
-			s.m_buffer = nullptr;//目标对象"置空"
-			s.m_size = 0;
-			cout << "String = 移动赋值运算符\n";
+			other.m_size = 0;
+			other.m_buffer = nullptr;
+
+			cout << "String移动=赋值运算符\n";
 			return *this;
 		}
 
