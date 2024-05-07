@@ -144,6 +144,7 @@
     <ClInclude Include="src\单例模式\single.h" />
     <ClInclude Include="src\数据结构\single_list.h" />
     <ClInclude Include="src\数据结构\string.h" />
+    <ClInclude Include="src\智能指针\shared_ptr.h" />
     <ClInclude Include="src\智能指针\unique_ptr.h" />
   </ItemGroup>
   <ItemGroup>
