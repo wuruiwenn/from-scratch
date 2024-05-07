@@ -88,20 +88,29 @@ namespace wrw
 		//移动构造函数
 		//移动构造和拷贝构造的区别就是：移动构造需要额外把源对象置nullptr
 		//且当前对象this仍未初始化，所以需要new char[]初始化内存
-		String(String&& s) {
-			
-			this->m_size = s.m_size;
-			int n = m_size;
+		String(String&& other) {
+			/*使用 浅拷贝 实现移动构造：（经验证，可以）
+			因为移动的本质 = 拷贝+源对象置空 2步。前一步仍然是拷贝的动作
+				所以，可以用浅拷贝实现。
+			又因为移动的话，最后源对象会被置空，
+				所以浅拷贝没有问题，不会形成double delete问题
+			m_size = other.m_size;
+			m_buf = other.m_buf;
+			other.m_size = 0;
+			other.m_buf = nullptr;*/
+
+			//基于深拷贝实现的 移动构造
+			this->m_size = other.m_size;
 			
 			m_buffer = new char[m_size + 1];
 			for (int i = 0; i < m_size; i++) {
-				m_buffer[i] = s.m_buffer[i];
+				m_buffer[i] = other.m_buffer[i];
 			}
 			m_buffer[m_size] = '\0';
 
 			//为了表达是"移动"，而非"拷贝"，源目标对象要"置空"
-			s.m_buffer = nullptr;
-			s.m_size = 0;
+			other.m_buffer = nullptr;
+			other.m_size = 0;
 
 			cout << "String 移动构造\n";
 		}
