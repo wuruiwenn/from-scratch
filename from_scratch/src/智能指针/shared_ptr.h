@@ -13,37 +13,55 @@ namespace wrw
 		T* obj;
 		int* p_cnt;//指向 目标对象的引用计数 的 指针
 	public:
-		//普通构造函数
-		shared_ptr() :obj(nullptr), p_cnt(nullptr) {}//若不传入任何目标对象
-		shared_ptr(T* ptr) :obj(ptr), p_cnt(new int(1)) {}//传入一个目标对象
+		// <普通构造函数>
+		shared_ptr() :obj(nullptr), p_cnt(nullptr) {}
+		shared_ptr(T* ptr) :obj(ptr), p_cnt(new int(1)) {}
 
-		//析构
+		// <析构函数>
 		~shared_ptr() {
-
+			if (p_cnt != nullptr && (--(*p_cnt)) == 0) {
+				cout << "目标对象 引用计数 = 0，释放目标对象 delete obj.\n";
+				delete obj;
+				delete p_cnt;
+			}
+			obj = nullptr;
+			p_cnt = nullptr;
 			cout << "shared_ptr 析构\n";
 		}
 
-		//拷贝构造
+		/*
+			<拷贝构造>：
+			更新引用计数
+			由于p_cnt是持有目标对象的引用计数的指针，
+			所以只需更新this的引用计数，实地访问地址更新即可
+		*/
 		shared_ptr(const shared_ptr& other) {
 			obj = other.obj;
 			p_cnt = other.p_cnt;
-			//更新引用计数
-			//因为是持有目标对象的引用计数的指针，所以只需更新this的引用计数即可
+
 			++(*p_cnt);
 			cout << "shared_ptr拷贝构造\n";
 		}
 
-		//拷贝=赋值运算符
+		/*
+			<拷贝 = 赋值运算符>
+		*/
 		shared_ptr& operator=(const shared_ptr& other) {
-			if (&other != this) {//若不是同一个对象，才...
-				release();//取消绑定的旧的目标对象，注意，并不是释放目标对象的内存
-				obj = other.obj;//绑定新的对象
-				p_cnt = other.p_cnt;//这里必须是浅拷贝才行，因为p_cnt是目标对象的引用计数，所有shared_ptr对于该目标对象的引用计数，都是指向同一个地方
-				++(*p_cnt);//更新目标对象的引用计数
+			//若是同一个shared_ptr对象，或2个不同shared_ptr但绑定了同一目标对象
+			if (&other == this || other.obj == this->obj) {
+				return *this;
 			}
-			cout << "shared_ptr 拷贝=赋值运算符\n";
+
+			release();//取消针对当前目标对象的绑定(若引用计数=0，则会delete)
+			obj = other.obj;//绑定新的对象
+			p_cnt = other.p_cnt;//这里反而必须是浅拷贝才行，因为p_cnt是目标对象的引用计数，所有shared_ptr对于该目标对象的引用计数，都是指向同一个地方
+			++(*p_cnt);//更新目标对象的引用计数
+
+			cout << "shared_ptr 拷贝 = 赋值运算符\n";
 			return *this;
 		}
+
+		//实现至此...
 
 		//移动构造
 		shared_ptr(shared_ptr&& other) {
@@ -105,18 +123,17 @@ namespace wrw
 			(这点要和unique_ptr的reset区分开：
 				reset是从头到尾都是针对当前这个unique_ptr，reset的初衷在于，更换当前unique_ptr所绑定的目标对象)
 			所以，shared_ptr没必要使用release，也就是没必要通过release某一个转移目标对象的控制权
-			因为shared_ptr可以 多个shared_ptr直接接管同一个目标对象的控制权。
+			因为shared_ptr可以通过 拷贝构造 直接实现多个shared_ptr直接获取对同一个目标对象的控制权
 		*/
 		void release() {
-			obj = nullptr;
 			if (p_cnt != nullptr && (--(*p_cnt)) == 0) {
 				delete obj;
-				obj = nullptr;
 				delete p_cnt;
-				p_cnt = nullptr;
 			}
+			obj = nullptr;
 			p_cnt = nullptr;//无论如何，当前shared_ptr不再管理该目标对象了，那么指向该目标对象的引用计数也要断开
 		}
+
 
 		/*
 			reset():
