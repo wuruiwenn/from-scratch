@@ -68,9 +68,12 @@ namespace wrw
 			p_cnt = other.p_cnt;
 
 			//引用计数应该是先-1，然后+1，所以无需改变
-
 			other.obj = nullptr;//源对象置空
 			other.p_cnt = nullptr;
+
+			//或者：
+			//++(*p_cnt);
+			//other.release();
 
 			cout << "shared_ptr 移动构造\n";
 		}
@@ -95,12 +98,23 @@ namespace wrw
 			}
 			else//绑定的是不同对象，p_cnt相当于没有更新，因为一加一减
 			{
-				//这里有问题：this.p_cnt要--，然后才能绑定新的引用计数块，即other的obj的引用计数块
 				this->release();
 				this->obj = other.obj;
 				this->p_cnt = other.p_cnt;
 				++(*p_cnt);
 				other.release();
+
+				/*更合理的流程应该是如下：
+				由于this即将接管obj的控制权，所以obj不可能被析构，
+				不用执行release内部的 "是否需要析构"的判断过程。
+				this->release();
+				this->obj = other.obj;
+				this->p_cnt = other.p_cnt;
+				++(*p_cnt);
+				--(*p_cnt);
+				other.obj = nullptr;
+				other.p_cnt = nullptr;
+				*/
 			}
 			cout << "shared_ptr 移动=赋值运算符\n";
 			return *this;
@@ -162,6 +176,33 @@ namespace wrw
 			这种情况：
 				若新对象newobj在此之前被shared_ptr(newobj)形式绑定过，那么这里重新绑定，则这个newobj是被多个shared_ptr直接绑定的，(而不是拷贝形式)，会造成double delete问题
 				若新对象newobj在此之前没有被shared_ptr绑定过，则可直接绑定，此时 *p_cnt肯定是初始化为 1
+		但是你可能会想，如果有以下情况：
+		User* u1 = new User(1);
+		User* u2 = new User(2);
+		User* u3 = new User(3);
+		using std::shared_ptr;这是标准std的shared_ptr
+		shared_ptr<User> sp1(u1);
+		shared_ptr<User> sp2(sp1);
+		shared_ptr<User> sp3(u3);
+		sp3.reset(u1);
+
+		cout << "sp1.use_count = " << sp1.use_count() << endl;// 2
+		cout << "sp2.use_count = " << sp2.use_count() << endl;// 2
+		cout << "sp3.use_count = " << sp3.use_count() << endl;// 1
+		首先，这里程序运行结果肯定错了，因为这里sp3，sp1都以这种直接(u1)传入构造函数的
+		方式控制u1，是不允许的，会产生double delete问题，
+		而且，你会发现，这里关于u1的use_count应该是3，因为他被sp1，sp2，sp3都接管了
+		但是其实不是的，这里std::shared_ptr本身对于reset的实现结果可见：
+		这里sp1.use_count = 2   sp2.use_count = 2，而sp3.use_count = 1
+		这说明，std::shared_ptr本身实现机制就是：
+			reset会对目标对象的引用计数初始化为1
+			因为std::shared_ptr本身会相信程序员不会写出 double delete有问题的程序出来
+			因为这个程序如果规范，就不会reset(u1)，传入这个已经被sp1(u1)直接绑定了的u1对象进来
+			std::shared_ptr希望程序员去制造的场景是：reset(ux)，这个ux从未被其他shared_ptr绑定过
+
+		所以：
+		（1）规范的shared_ptr编程：不要对reset(newobj)，这个传入的新对象newobj，不能是一个已经被shared_ptr所绑定了的对象，否则会产生double delete问题
+		（2）reset(newobj)函数内部实现：目标对象newobj的引用计数初始化为：1
 		*/
 		void reset(T* newobj = nullptr) {
 			if (this->obj == newobj) {//如果新绑定对象就是当前绑定的对象，则什么也不做
