@@ -151,7 +151,7 @@ namespace wrw
 				解除unique_ptr所绑定的目标对象的控制权，把控制权转移给另一个unique_ptr对象
 				因为unique_ptr是不能复制的，所以只能通过release来把目标对象的控制权进行转移（但好像 移动构造 也可以实现目标对象的控制权转移 ！）
 			(这点要和unique_ptr的reset区分开：
-				reset是从头到尾都是针对当前这个unique_ptr，reset的初衷在于，更换当前unique_ptr所绑定的目标对象)
+				reset是从头到尾都是针对当前这个unique_ptr对象，reset的初衷在于，更换当前unique_ptr所绑定的目标对象)
 			所以，shared_ptr没必要使用release，也就是没必要通过release某一个转移目标对象的控制权
 			因为shared_ptr可以通过 拷贝构造 直接实现多个shared_ptr直接获取对同一个目标对象的控制权
 		*/
@@ -167,7 +167,7 @@ namespace wrw
 		/*
 			reset():
 			shared_ptr的reset()和unique_ptr的rest()具有很大差异：
-			shared_ptr::reset()：会先把目标对象的引用计数减一，如果引用计数为0，才会delete目标对象，否则并不会delete目标对象；若有新对象，则绑定新对象，新对象引用计数+1
+			shared_ptr::reset()：会先把目标对象的引用计数减一，如果引用计数为0，才会delete目标对象，否则并不会delete目标对象；若有新对象，则绑定新对象，新对象引用计数 初始化为1 (而不是+1)
 			unique_ptr::reset()：会直接delete目标对象，然后若传入新对象，则绑定新对象，新对象引用计数+1
 
 			shared_ptr reset(T* newobj): 有个问题
@@ -189,16 +189,25 @@ namespace wrw
 		cout << "sp1.use_count = " << sp1.use_count() << endl;// 2
 		cout << "sp2.use_count = " << sp2.use_count() << endl;// 2
 		cout << "sp3.use_count = " << sp3.use_count() << endl;// 1
-		首先，这里程序运行结果肯定错了，因为这里sp3，sp1都以这种直接(u1)传入构造函数的
-		方式控制u1，是不允许的，会产生double delete问题，
+		首先，这里程序运行结果肯定错了，
+		因为这里sp3，sp1都以这种直接(u1)传入构造函数的方式控制u1，
+		这种行为，std::shared_ptr是不允许的，会产生double delete问题，
+
 		而且，你会发现，这里关于u1的use_count应该是3，因为他被sp1，sp2，sp3都接管了
 		但是其实不是的，这里std::shared_ptr本身对于reset的实现结果可见：
 		这里sp1.use_count = 2   sp2.use_count = 2，而sp3.use_count = 1
 		这说明，std::shared_ptr本身实现机制就是：
 			reset会对目标对象的引用计数初始化为1
 			因为std::shared_ptr本身会相信程序员不会写出 double delete有问题的程序出来
-			因为这个程序如果规范，就不会reset(u1)，传入这个已经被sp1(u1)直接绑定了的u1对象进来
+			因为这个程序如果规范，就不会reset(u1)，传入这个已经被sp1(u1)，等其他shared_ptr对象绑定了的u1对象进来
 			std::shared_ptr希望程序员去制造的场景是：reset(ux)，这个ux从未被其他shared_ptr绑定过
+		
+		或者，其实可以从语义本身来理解这个问题：
+		reset(newobj)，这里newobj不可能是被别人绑定过的，
+		你reset不就是想给newobj换一个控制权吗？如果newobj被别人绑定过，你想为newobj换一个控制权，
+		shared_ptr是可以拷贝的，直接用拷贝构造的方法就行，根本不需要reset()
+		所以，传入被绑定过的newobj是没有意义的
+		newobj肯定是没被绑定过的目标对象，才有意义。
 
 		所以：
 		（1）规范的shared_ptr编程：不要对reset(newobj)，这个传入的新对象newobj，不能是一个已经被shared_ptr所绑定了的对象，否则会产生double delete问题
