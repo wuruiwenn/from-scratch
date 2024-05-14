@@ -1,7 +1,16 @@
 #pragma once
 
 /*
+	shared_ptr：
+	非常简洁、简单的一个shared_ptr实现
+	核心2部分：
+		绑定目标对象
+		目标对象的引用计数
+
+	不涉及weak_ptr
+
 	shared_ptr的核心是：引用计数
+	引用计数 = 0，则shared_ptr所绑定的目标对象，应该被delete
 */
 
 namespace wrw
