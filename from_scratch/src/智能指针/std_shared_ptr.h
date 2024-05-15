@@ -120,7 +120,7 @@ namespace wrw2
 			{
 				delete obj;
 				//obj = nullptr;
-				if (0 == (counter->weak_cnt))//这里不是很明白，为什么weak_cnt=0，要delete cnter？
+				if (0 == (counter->weak_cnt))//如果weak_cnt不为0，还有用处，就是用于weak_ptr判断是否仍然有weak_ptr对象绑定了目标对象
 				{
 					delete counter;
 					//counter = nullptr;
