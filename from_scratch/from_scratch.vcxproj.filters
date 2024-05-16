@@ -39,7 +39,13 @@
     <ClInclude Include="src\智能指针\tiny_shared_ptr.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\智能指针\std_shared_ptr.h">
+    <ClInclude Include="src\智能指针\counter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\智能指针\shared_ptr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\智能指针\weak_ptr.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

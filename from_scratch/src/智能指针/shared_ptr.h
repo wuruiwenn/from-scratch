@@ -1,22 +1,25 @@
 #pragma once
 
 /*
+
 	更加符合 std::shared_ptr
 	std::shared_ptr内部是和weak_ptr具有关联的，
 	而且引用计数，是用的一个Counter类来实现，
 	包括 shared_ptr的引用计数、weak_ptr的引用计数
 */
 
+#include"counter.h"
 namespace wrw2
 {
 	template<class T> class weak_ptr;
-	class Counter;
 
 	template<class T>
 	class shared_ptr {
 	private:
 		T* obj;
 		Counter* counter;
+		template<class S> friend class shared_ptr;
+		template<class S> friend class weak_ptr;
 	public:
 		/*
 			<普通构造>
@@ -50,12 +53,18 @@ namespace wrw2
 			obj = other.obj;
 			counter = other.counter;
 			++(counter->share_cnt);
-			cout << "shared_ptr 拷贝构造\n";
+			cout << "shared_ptr 拷贝构造 (by a shared_ptr)\n";
 		}
 
-		/*
-			拷贝 = 赋值运算符
-		*/
+		//shared_ptr可通过一个weak_ptr进行构造
+		shared_ptr(const weak_ptr<T>& other) {
+			obj = other.obj;
+			counter = other.counter();
+			++(counter->share_cnt);
+			cout << "shared_ptr 拷贝构造 (by a weak_ptr)\n";
+		}
+
+		//拷贝 = 赋值运算符
 		shared_ptr& operator=(const shared_ptr& other) {
 			if (this == &other || obj == other.obj) {
 				return *this;
@@ -120,7 +129,7 @@ namespace wrw2
 			{
 				delete obj;
 				//obj = nullptr;
-				if (0 == (counter->weak_cnt))//如果weak_cnt不为0，还有用处，就是用于weak_ptr判断是否仍然有weak_ptr对象绑定了目标对象
+				if (0 == (counter->weak_cnt))//如果weak_cnt不为0，还有用处，就是用于weak_ptr判断是否仍然有weak_ptr对象绑定了目标对象【这里也是为啥shared_ptr需要同时持有share_cnt和weka_ptr的原因，仅仅持有share_cnt这里就不好判断了】
 				{
 					delete counter;
 					//counter = nullptr;
@@ -169,113 +178,6 @@ namespace wrw2
 
 		T& operator*() {
 			return *obj;
-		}
-	};
-
-	class Counter
-	{
-	public:
-		Counter() :share_cnt(0), weak_cnt(0) {}
-		int share_cnt = 0;
-		int weak_cnt = 0;
-	};
-
-
-	template<class T>
-	class weak_ptr {
-	public:
-		friend class shared_ptr<T>;
-	private:
-		T* obj;
-		Counter* counter;
-	public:
-		/*
-			weak_ptr构造函数：
-			weak_ptr只能通过shared_ptr来构造，不能直接传入目标对象obj
-		*/
-		weak_ptr() :obj(nullptr), counter(nullptr) {}
-		weak_ptr(shared_ptr<T>& sp)
-			:obj(sp.obj), counter(sp.counter)
-		{
-			if (counter) {
-				++(counter->weak_cnt);
-			}
-		}
-
-		//析构
-		~weak_ptr() {
-			release();
-		}
-
-		//拷贝构造
-		weak_ptr(const weak_ptr& other) {
-			obj = other.obj;
-			counter = other.counter;
-			++(counter->weak_cnt);
-			cout << "weak_ptr 拷贝构造\n";
-		}
-
-		/*
-			拷贝 = 赋值运算符
-			有2种：
-				传入weak_ptr
-				传入shared_ptr
-		*/
-		weak_ptr& operator=(const weak_ptr& other) {
-			if (this == &other) {
-				return *this;
-			}
-			release();
-			obj = other.obj;
-			counter = other.counter;
-			++(counter->weak_cnt);
-			return *this;
-		}
-		weak_ptr& operator=(const shared_ptr& other) {
-			//传入shared_ptr，自然不可能是同一个对象
-			release();
-			obj = other.obj;
-			counter = other.counter;
-			++(counter->weak_cnt);
-			return *this;
-		}
-
-
-
-		/*
-			重要函数：
-				release()
-				lock()
-				expired()
-		*/
-		void release()
-		{
-			if (!counter)
-				return;
-
-			--(counter->weak_cnt);
-			if (0 == (counter->weak_cnt) && 0 == (counter->share_cnt))
-			{
-				delete counter;
-			}
-			counter = nullptr;
-		}
-
-		/*
-			lock()：
-			从weak_ptr中获取一个shared_ptr对象，
-			若目标对象已经被销毁，则返回空的shared_ptr，否则返回完整的shared_ptr
-		*/
-		shared_ptr<T>& lock() {
-			return shared_ptr<T>(*this);
-		}
-
-		/*
-			expired():
-				判断目标对象是否仍存活
-		*/
-		bool expired() {
-
 		}
 	};
 }

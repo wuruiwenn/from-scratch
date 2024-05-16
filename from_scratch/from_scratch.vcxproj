@@ -146,7 +146,9 @@
     <ClInclude Include="src\数据结构\string.h" />
     <ClInclude Include="src\智能指针\tiny_shared_ptr.h" />
     <ClInclude Include="src\智能指针\unique_ptr.h" />
-    <ClInclude Include="src\智能指针\std_shared_ptr.h" />
+    <ClInclude Include="src\智能指针\shared_ptr.h" />
+    <ClInclude Include="src\智能指针\counter.h" />
+    <ClInclude Include="src\智能指针\weak_ptr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\test.cpp" />
