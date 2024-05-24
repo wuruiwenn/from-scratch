@@ -161,6 +161,8 @@ namespace wrw
 				因为unique_ptr是不能复制的，所以只能通过release来把目标对象的控制权进行转移（但好像 移动构造 也可以实现目标对象的控制权转移 ！）
 			(这点要和unique_ptr的reset区分开：
 				reset是从头到尾都是针对当前这个unique_ptr对象，reset的初衷在于，更换当前unique_ptr所绑定的目标对象)
+				即：release是给同一个目标对象obj更换不同的unique_ptr智能指针对象进行绑定；
+					reset是同一个unique_ptr智能指针对象，去更换不同的目标对象obj的绑定。
 			所以，shared_ptr没必要使用release，也就是没必要通过release某一个转移目标对象的控制权
 			因为shared_ptr可以通过 拷贝构造 直接实现多个shared_ptr直接获取对同一个目标对象的控制权
 		*/
@@ -198,7 +200,7 @@ namespace wrw
 		cout << "sp1.use_count = " << sp1.use_count() << endl;// 2
 		cout << "sp2.use_count = " << sp2.use_count() << endl;// 2
 		cout << "sp3.use_count = " << sp3.use_count() << endl;// 1
-		首先，这里程序运行结果肯定错了，
+		首先，这里程序运行，直接编译报错了，
 		因为这里sp3，sp1都以这种直接(u1)传入构造函数的方式控制u1，
 		这种行为，std::shared_ptr是不允许的，会产生double delete问题，
 
@@ -209,7 +211,7 @@ namespace wrw
 			reset会对目标对象的引用计数初始化为1
 			因为std::shared_ptr本身会相信程序员不会写出 double delete有问题的程序出来
 			因为这个程序如果规范，就不会reset(u1)，传入这个已经被sp1(u1)，等其他shared_ptr对象绑定了的u1对象进来
-			std::shared_ptr希望程序员去制造的场景是：reset(ux)，这个ux从未被其他shared_ptr绑定过
+			std::shared_ptr希望程序员去制造的场景是：reset(ux)，这个ux从未被其他shared_ptr绑定过（无论是拷贝构造，还是直接括号传入shared_ptr对象的方式）
 		
 		或者，其实可以从语义本身来理解这个问题：
 		reset(newobj)，这里newobj不可能是被别人绑定过的，
