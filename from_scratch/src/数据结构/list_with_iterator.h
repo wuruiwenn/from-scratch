@@ -57,9 +57,10 @@ namespace wrw
 				return *this;
 			}
 			list_iterator operator++(int) {//i++
-				list_iterator tmp(*this);
+				//list_iterator tmp(*this);
+				list_iterator tmp = *this;
 				//obj = obj->next;
-				++(*this);
+				++(*this);//直接调用重载后的++
 				return tmp;
 			}
 
