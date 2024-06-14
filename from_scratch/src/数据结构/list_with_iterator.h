@@ -46,7 +46,9 @@ namespace wrw
 		private:
 			Node<T>* obj;
 		public:
+			//根据应用场景来看应该如何实现
 			//Mylist<int>::list_iterator it = l.begin()
+			//以上应该是一个：拷贝构造的过程，所以理论上要实现list_iterator的拷贝构造，但是会默认提供
 			list_iterator(Node<T>* ptr = nullptr)
 				:obj(ptr)
 			{}
