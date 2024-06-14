@@ -58,6 +58,11 @@ namespace wrw
 				obj = obj->next;
 				return *this;
 			}
+
+			//为什么这里不能返回引用&？而上面可以？
+			//一种说法是：C++允许 ++++i，而不允许i++++
+			//如果这里后置++返回&，则意味着i++++是可行的
+			//因为i++++实际是（i++)++，i++放回引用则还是本身，继续++，则可以实现
 			list_iterator operator++(int) {//i++
 				//list_iterator tmp(*this);
 				list_iterator tmp = *this;
