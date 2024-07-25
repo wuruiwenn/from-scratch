@@ -22,7 +22,8 @@ using std::string;
 namespace wrw
 {
 	template<class T>
-	struct Node {
+	struct Node 
+	{
 		T val;
 		Node* next;
 		Node(const T& value)
@@ -62,7 +63,8 @@ namespace wrw
 			//为什么这里不能返回引用&？而上面可以？
 			//一种说法是：C++允许 ++++i，而不允许i++++
 			//如果这里后置++返回&，则意味着i++++是可行的
-			//因为i++++实际是（i++)++，i++放回引用则还是本身，继续++，则可以实现
+			//因为i++++实际是（i++)++，i++返回引用则还是本身，继续++，则可以实现
+			//显然和C++ 规定矛盾
 			list_iterator operator++(int) {//i++
 				//list_iterator tmp(*this);
 				list_iterator tmp = *this;
@@ -79,6 +81,12 @@ namespace wrw
 				return obj;
 			}
 
+			/*
+			实际上，这里形参必须为 const&，而不能是 list_iterator& other【这是左值引用】
+			因为未来你调用迭代器场景，比如 for(auto it = lst.begin();it != lst.end();it++)
+			这里 it != lst.end()，lst.end()是一个临时量，临时量是右值
+			显然，它不能和 != 运算符重载函数的 形参 list_iterator& other 匹配上，所以会报错。
+			*/
 			bool operator==(const list_iterator& other) {
 				return other.obj == obj;
 			}
