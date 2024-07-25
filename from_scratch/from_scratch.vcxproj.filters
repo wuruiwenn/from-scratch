@@ -51,6 +51,9 @@
     <ClInclude Include="src\数据结构\list_with_iterator.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\STL\string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\单例模式\single.cpp">

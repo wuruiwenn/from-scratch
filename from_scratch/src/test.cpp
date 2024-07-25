@@ -5,6 +5,7 @@
 #include"./单例模式/single.h"
 #include"./数据结构/single_list.h"
 #include"./数据结构/string.h"
+#include"./STL/string.h"
 
 class User {
 	int id;
@@ -31,24 +32,12 @@ wrw::String& returObj() {
 
 int main() {
 	using namespace wrw;
-	/*SingleList* s = new SingleList();
-	for (int i = 1; i <= 5; i++)
-	{
-		s->addLast(i);
-	}
-	cout << *s;
-	cout << "reverse...\n";
-	s->reverse();
-	cout << *s;*/
+	string s("abc");
+	cout << s.c_str() << endl;
+	string s1;
+	cout << s1.c_str() << endl;
 
-	//String s("abcdef");
-	//String s1(s);//执行之前，s1此时并没有被构造出来，正是通过s来构造s1的
-
-	//cout << " s = " << s;
-	//cout << "s1 = " << s1;
-	//String s1 = returObj();
-	//cout << "s1 = " << s1;
-	String s("anc");
-	String s1("dd");
-	s = s1;
+	cout << s[2] << endl;
+	s[1] = '&';
+	cout << s.c_str() << endl;
 }
