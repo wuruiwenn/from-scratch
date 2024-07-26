@@ -5,7 +5,7 @@
 #include"./单例模式/single.h"
 #include"./数据结构/single_list.h"
 #include"./数据结构/string.h"
-#include"./STL/string.h"
+#include"STL/single_with_iterator.h"
 
 class User {
 	int id;
@@ -32,12 +32,15 @@ wrw::String& returObj() {
 
 int main() {
 	using namespace wrw;
-	string s("abc");
-	cout << s.c_str() << endl;
-	string s1;
-	cout << s1.c_str() << endl;
-
-	cout << s[2] << endl;
-	s[1] = '&';
-	cout << s.c_str() << endl;
+	using wrw::string;
+	string s("abcdef");
+	//string::iterator it = s.begin();
+	for (string::iterator it = s.begin(); it != s.end(); it++) {
+		cout << *it << " ";
+	}
+	cout << endl << endl;
+	for (const auto& cur : s) {
+		cout << cur << " ";
+	}
+	cout << endl;
 }
