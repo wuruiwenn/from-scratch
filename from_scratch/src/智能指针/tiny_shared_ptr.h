@@ -83,6 +83,13 @@ namespace wrw
 			//或者：
 			//++(*p_cnt);
 			//other.release();
+			/*
+			这里不能先让待移动对象other.release()，因为该shared_ptr对象可能就是唯一管理obj的智能指针对象，
+			release后会delete obj，则被管理的目标对象变为nullptr
+			导致当前接受移动结果的对象obj指向了一个nullptr
+
+			或者，要么就干脆别更新p_cnt，移动确实无需更新，则这里不要调用release，而是手动置nullptr
+			*/
 
 			cout << "shared_ptr 移动构造\n";
 		}
