@@ -155,6 +155,7 @@
     <ClInclude Include="src\智能指针\shared_ptr.h" />
     <ClInclude Include="src\智能指针\counter.h" />
     <ClInclude Include="src\智能指针\weak_ptr.h" />
+    <ClInclude Include="src\算法\排序算法\sort.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\test.cpp" />
