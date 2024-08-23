@@ -147,7 +147,7 @@ void merge(int a[], int L, int mid, int R) {//合并2个有序数组
 	vector<int> r;
 	r.reserve(N);
 
-	while (i <= mid && j <= R) {
+	while (i <= mid && j <= R) { 
 		if (a[i] <= a[j]) {
 			r.push_back(a[i++]);
 		}

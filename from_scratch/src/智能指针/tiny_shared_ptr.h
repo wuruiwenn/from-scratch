@@ -239,7 +239,7 @@ namespace wrw
 				return;
 			}
 			this->release();//解绑旧的目标对象
-			if (newobj != nullptr) {//若传入了新的对象，则进行新的绑定
+			if (newobj != nullptr) {//若传入了新的对象，则进行新的绑定，要判空，因为 涉及 是否 初始化 p_cnt的值为1
 				this->obj = newobj;
 				this->p_cnt = new int(1);
 			}
