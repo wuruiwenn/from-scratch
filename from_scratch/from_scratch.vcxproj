@@ -161,6 +161,7 @@
     <ClInclude Include="src\智能指针\weak_ptr.h" />
     <ClInclude Include="src\算法\排序算法\sort.h" />
     <ClInclude Include="src\设计模式\创建型\creational.h" />
+    <ClInclude Include="src\设计模式\结构型\adaptor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\test.cpp" />

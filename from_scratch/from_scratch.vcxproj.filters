@@ -60,6 +60,9 @@
     <ClInclude Include="src\设计模式\创建型\creational.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\设计模式\结构型\adaptor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\单例模式\single.cpp">
