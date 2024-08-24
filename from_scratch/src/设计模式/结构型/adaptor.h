@@ -10,10 +10,15 @@ using std::cout;
 //（将被）适配者
 //已经存在的原始接口
 //相当于 STL deque 双向线性结构
+
+//Adaptee就相当于工具，它内部的一些接口函数，会被适配器根据自己的需求，对它们进行个性化定制
 class Adaptee {
 public:
 	void specRequest() {
 		cout << "Adaptee spec Request.\n";
+	}
+	void specPush() {
+		//...
 	}
 };
 
@@ -21,6 +26,8 @@ public:
 class Target {
 public:
 	virtual void request() = 0;//相当于STL一些接口函数，如pop、push
+	virtual void push() = 0;
+	virtual void pop() = 0;
 };
 
 //适配器，完成适配工作
@@ -35,6 +42,9 @@ public:
 public:
 	void request() override {//定制(适配) 接口函数
 		adaptee->specRequest();
+	}
+	void push() override {
+		adaptee->specPush();
 	}
 	//...
 };
