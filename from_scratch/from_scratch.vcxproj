@@ -151,9 +151,11 @@
     <ClInclude Include="src\STL\single_with_iterator.h" />
     <ClInclude Include="src\type_traits\type_traits.h" />
     <ClInclude Include="src\单例模式\single.h" />
+    <ClInclude Include="src\数据结构\headers.h" />
     <ClInclude Include="src\数据结构\list_with_iterator.h" />
     <ClInclude Include="src\数据结构\single_list.h" />
     <ClInclude Include="src\数据结构\string.h" />
+    <ClInclude Include="src\数据结构\string_with_iterator.h" />
     <ClInclude Include="src\智能指针\tiny_shared_ptr.h" />
     <ClInclude Include="src\智能指针\unique_ptr.h" />
     <ClInclude Include="src\智能指针\shared_ptr.h" />
