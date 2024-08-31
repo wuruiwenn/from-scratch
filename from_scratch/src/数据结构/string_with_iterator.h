@@ -1,6 +1,11 @@
 #pragma once
 #include"headers.h"
 
+
+//å¸¦è¿­ä»£å™¨çš„ std::string
+//æ˜¯STLä¸­ std::stringã€iteratorçš„ä¸€ä¸ªç®€å•å®ç°
+
+
 namespace wrw {
 	class string
 	{
@@ -9,7 +14,7 @@ namespace wrw {
 		int m_size;
 		int m_capacity;
 	public:
-		//¹¹Ôìº¯Êı
+		//ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 		/*string()
 			:m_ptr(new char[1]), m_size(0), m_capacity(0) {
 			m_ptr[0] = '\0';
@@ -22,7 +27,7 @@ namespace wrw {
 			strcpy(m_ptr, str);
 		}*/
 
-		//ºÏ²¢Îª´øÄ¬ÈÏ²ÎÊıµÄ¹¹Ôìº¯Êı
+		//ï¿½Ï²ï¿½Îªï¿½ï¿½Ä¬ï¿½Ï²ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½ï¿½ìº¯ï¿½ï¿½
 		string(const char* str = "")
 			: m_size(strlen(str)) {
 			m_capacity = m_size;
@@ -30,19 +35,19 @@ namespace wrw {
 			strcpy(m_ptr, str);
 		}
 
-		//Îö¹¹
+		//ï¿½ï¿½ï¿½ï¿½
 		~string() {
 			delete[] m_ptr;
 			m_size = m_capacity = 0;
 		}
 
-		//¿½±´¹¹Ôì
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		string(const string& other) {
 			m_size = other.m_size;
 			m_capacity = m_size;
-			m_ptr = new char[m_capacity + 1];//Ä¬ÈÏ¿½±´¹¹ÔìÊÇÇ³¿½±´£¬ÕâÀï±ØĞëÊµÏÖÉî¿½±´£¬·ñÔòdouble delete
+			m_ptr = new char[m_capacity + 1];//Ä¬ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½î¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½double delete
 			strcpy(m_ptr, other.m_ptr);
-			cout << "string¿½±´¹¹Ôì\n";
+			cout << "stringï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n";
 		}
 		string& operator=(const string& other) {
 			if (this == &other) {
@@ -53,7 +58,7 @@ namespace wrw {
 			m_capacity = m_size;
 			m_ptr = new char[m_capacity + 1];
 			strcpy(m_ptr, other.m_ptr);
-			cout << "string¿½±´ = ¸³ÖµÔËËã·û\n";
+			cout << "stringï¿½ï¿½ï¿½ï¿½ = ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½\n";
 			return *this;
 		}
 
@@ -62,11 +67,11 @@ namespace wrw {
 			return m_ptr;
 		}
 
-		char& operator[](int pos) {//ÔÊĞíÍâ²¿Í¨¹ı[]À´ĞŞ¸Ästring¶ÔÏóÄÚµÄ×Ö·û
+		char& operator[](int pos) {//ï¿½ï¿½ï¿½ï¿½ï¿½â²¿Í¨ï¿½ï¿½[]ï¿½ï¿½ï¿½Ş¸ï¿½stringï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ö·ï¿½
 			_ASSERT(pos < m_size);
 			return m_ptr[pos];
 		}
-		const char& operator[](int pos) const {//Ê×²¿Ò²¿É¼ÓÉÏconst£¬½ûÖ¹Íâ²¿ĞŞ¸Ä¸Ã×Ö·û
+		const char& operator[](int pos) const {//ï¿½×²ï¿½Ò²ï¿½É¼ï¿½ï¿½ï¿½constï¿½ï¿½ï¿½ï¿½Ö¹ï¿½â²¿ï¿½Ş¸Ä¸ï¿½ï¿½Ö·ï¿½
 			_ASSERT(pos < m_size);
 			return m_ptr[pos];
 		}
@@ -77,22 +82,22 @@ namespace wrw {
 
 		void Print(const string& str) {
 			for (int i = 0; i < m_size; i++) {
-				cout << str[i] << " ";//ÕâÀï±éÀú£¬¿Ï¶¨²»ÔÊĞíÍ¨¹ı[]ĞŞ¸Ästring¶ÔÏóµÄ£¬ËùÒÔoperator[]±ØĞëÊÇconst
+				cout << str[i] << " ";//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½[]ï¿½Ş¸ï¿½stringï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½operator[]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½const
 			}
 			cout << endl;
 		}
 	public:
-		//ÊµÏÖ string µü´úÆ÷
-		//¶¨ÒåÎª ÄÚ²¿Àà
+		//Êµï¿½ï¿½ string ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//ï¿½ï¿½ï¿½ï¿½Îª ï¿½Ú²ï¿½ï¿½ï¿½
 		class string_iterator {
 		private:
 			char* obj;
 		public:
 			string_iterator(char* ptr = nullptr) :obj(ptr) {}
 
-			//ÕıÏòµü´ú
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			string_iterator& operator++() {//++i
-				++obj;//±¾Éí¾ÍÊÇÖ¸ÏòÒ»¸öcharµ¥Î»µÄÖ¸Õë£¬Ö±½Ó++£¬Ã¿´Î++ÌøÔ¾Ò»¸öchar¿í¶È
+				++obj;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ò»ï¿½ï¿½charï¿½ï¿½Î»ï¿½ï¿½Ö¸ï¿½ë£¬Ö±ï¿½ï¿½++ï¿½ï¿½Ã¿ï¿½ï¿½++ï¿½ï¿½Ô¾Ò»ï¿½ï¿½charï¿½ï¿½ï¿½ï¿½
 				return *this;
 			}
 			string_iterator operator++(int) {//i++
@@ -115,7 +120,7 @@ namespace wrw {
 			}
 		};
 	public:
-		//¶¨Òå µü´úÆ÷ ÀàĞÍ±ğÃû
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
 		typedef string_iterator iterator;
 		iterator begin() {
 			return iterator(m_ptr);
@@ -135,17 +140,17 @@ namespace wrw {
 //	using wrw::string;
 //	string s("ABCDEFG");
 //
-//	cout << "µü´úÆ÷·ÃÎÊstring\n";
+//	cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½string\n";
 //	for (auto it = s.begin(); it != s.end(); it++) {
 //		cout << (*it) << " ";
 //	}
 //	cout << endl;
-//	for (auto cur : s) {//±¾ÖÊ¾ÍÊÇµ÷ÓÃµü´úÆ÷£¬Ä¿±ê¶ÔÏóÊµÏÖÁËµü´úÆ÷¾ÍÄÜÊ¹ÓÃ
+//	for (auto cur : s) {//ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Çµï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
 //		cout << cur << " ";
 //	}
 //	cout << endl;
 //
-//	//µü´úÆ÷²Ù×÷
+//	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	auto it = s.begin();
 //	cout << "it init = " << *it << endl;
 //	//++it;
@@ -162,6 +167,6 @@ namespace wrw {
 //	auto it4 = s.begin();
 //	it4++;
 //	++it4;
-//	cout << "it3 == it4£º" << (it3 == it4) << endl;
+//	cout << "it3 == it4ï¿½ï¿½" << (it3 == it4) << endl;
 //
 //}
