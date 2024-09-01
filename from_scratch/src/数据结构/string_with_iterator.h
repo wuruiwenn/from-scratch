@@ -78,7 +78,7 @@ namespace wrw {
 		int size() const {
 			return m_size;
 		}
-
+		//仅测试operator[]用
 		void Print(const string& str) {
 			for (int i = 0; i < m_size; i++) {
 				cout << str[i] << " ";//这里遍历，肯定不允许通过[]修改string对象的，所以operator[]必须是const
@@ -118,6 +118,16 @@ namespace wrw {
 				return obj != other.obj;
 			}
 		};
+		//可实现const iterator
+		class const_string_iterator {
+		private:
+			const char* ptr;
+		public:
+			//...类似
+			//和普通正向迭代器区别在于：
+			//const迭代器的 begin()、end()成员函数 必须是const，即不能通过迭代器修改类内元素
+			//自然不需要 实现 operator++、operator++(int)
+		};
 	public:
 		//定义 迭代器 类型别名
 		typedef string_iterator iterator;
@@ -126,6 +136,18 @@ namespace wrw {
 		}
 		iterator end() {
 			return iterator(m_ptr + m_size);
+		}
+	public:
+		//一些操作符
+		bool operator>(const string& other) const {
+			return strcmp(m_ptr, other.m_ptr) > 0;
+		}
+		bool operator==(const string& other) const {
+			return strcmp(m_ptr, other.m_ptr) == 0;
+		}
+		bool operator>=(const string& other) const {
+			//return *this > other || *this == other;
+			return *this > other || other == *this;
 		}
 	public:
 		friend std::ostream& operator<<(std::ostream& out, const string& str);
@@ -167,4 +189,13 @@ int main() {
 	it4++;
 	++it4;
 	cout << "it3 == it4：" << (it3 == it4) << endl;
+
+	cout << "update by iterator ...\n";
+	string y = "abcdef";
+	auto itx = y.begin();
+	++itx;
+	++itx;
+	(*itx) = 'K';
+	cout << "y = " << y << endl;
+	y.Print(y);
 }
