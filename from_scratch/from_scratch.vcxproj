@@ -155,6 +155,7 @@
     <ClInclude Include="src\数据结构\list_with_iterator.h" />
     <ClInclude Include="src\数据结构\single_list.h" />
     <ClInclude Include="src\数据结构\string.h" />
+    <ClInclude Include="src\数据结构\string_copy_on_write.h" />
     <ClInclude Include="src\数据结构\string_with_iterator.h" />
     <ClInclude Include="src\智能指针\tiny_shared_ptr.h" />
     <ClInclude Include="src\智能指针\unique_ptr.h" />

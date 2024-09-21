@@ -69,6 +69,9 @@
     <ClInclude Include="src\数据结构\headers.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\数据结构\string_copy_on_write.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\单例模式\single.cpp">
