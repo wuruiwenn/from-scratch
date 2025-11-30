@@ -1,0 +1,160 @@
+#pragma once
+
+//带迭代器的单链表
+//是STL中List、iterator的一个简单实现
+
+#include<iostream>
+#include<memory>
+#include<utility>
+#include<vector>
+#include<numeric>
+#include<string>
+#include<algorithm>
+#include<map>
+#include<functional>
+
+using std::endl;
+using std::cout;
+using std::map;
+using std::vector;
+using std::string;
+
+namespace wrw
+{
+	template<class T>
+	struct Node 
+	{
+		T val;
+		Node* next;
+		Node(const T& value)
+			:val(value), next(nullptr)
+		{}
+	};
+
+	template<class T>
+	class MyList {
+	private:
+		Node<T>* head;
+		Node<T>* tail;
+		int size;
+	public://MyList 的构造方法
+		MyList()
+			:head(nullptr), tail(nullptr), size(0)
+		{}
+	private://内部类：迭代器 类模板
+		template<class T>
+		class list_iterator {
+		private:
+			Node<T>* obj;
+		public:
+			//根据应用场景来看应该如何实现
+			//Mylist<int>::list_iterator it = l.begin()
+			//以上应该是一个：拷贝构造的过程，所以理论上要实现list_iterator的拷贝构造，但是会默认提供
+			list_iterator(Node<T>* ptr = nullptr)
+				:obj(ptr)
+			{}
+			//一些操作符
+			//迭代器的核心操作：++i、i++
+			list_iterator& operator++() {//++i
+				obj = obj->next;
+				return *this;
+			}
+
+			//为什么这里不能返回引用&？而上面可以？
+			//一种说法是：C++允许 ++++i，而不允许i++++
+			//如果这里后置++返回&，则意味着i++++是可行的
+			//因为i++++实际是（i++)++，i++返回引用则还是本身，继续++，则可以实现
+			//显然和C++ 规定矛盾
+			list_iterator operator++(int) {//i++
+				//list_iterator tmp(*this);
+				list_iterator tmp = *this;
+				//obj = obj->next;
+				++(*this);//直接调用重载后的++
+				return tmp;
+			}
+
+			T& operator*() {
+				//return (*obj).val;
+				return obj->val;
+			}
+			Node<T>* operator->() {
+				return obj;
+			}
+
+			/*
+			实际上，这里形参必须为 const&，而不能是 list_iterator& other【这是左值引用】
+			因为未来你调用迭代器场景，比如 for(auto it = lst.begin();it != lst.end();it++)
+			这里 it != lst.end()，lst.end()是一个临时量，临时量是右值
+			显然，它不能和 != 运算符重载函数的 形参 list_iterator& other 匹配上，所以会报错。
+			*/
+			bool operator==(const list_iterator& other) {
+				return other.obj == obj;
+			}
+
+			bool operator!=(const list_iterator& other) {
+				return other.obj != obj;
+			}
+		};
+
+	public://MyList 成员方法
+		void push_back(const T& val) {
+			if (head == nullptr) {
+				head = new Node(val);
+				tail = head;
+			}
+			else {
+				tail->next = new Node(val);
+				tail = tail->next;
+			}
+			size++;
+		}
+	public://容器和迭代器 建立关联
+		//typedef list_iterator iterator;
+		using iterator = list_iterator<T>;//类型别名
+
+		//迭代器 头部、尾部
+		// Mylist<int>::iterator it = lst.begin()
+		iterator begin() {
+			return iterator(head);
+		}
+		iterator end() {
+			return iterator(tail->next);
+		}
+
+
+		template<class T>
+		friend std::ostream& operator<<(std::ostream& out, const MyList<T>& l);
+	};
+	template<class T>
+	std::ostream& operator<<(std::ostream& out, const MyList<T>& l) {
+		if (l.size == 0) {
+			out << "[]\n";
+			return out;
+		}
+		Node<T>* ptr = l.head;
+		out << "[";
+		while (ptr != l.tail) {
+			out << ptr->val << "->";
+			ptr = ptr->next;
+		}
+		out << l.tail->val << "]\n";
+		return out;
+	}
+	
+}
+
+
+/*
+	int main() {
+		MyList<int> list;
+		for (int k = 1; k <= 5; k++) {
+			list.push_back(k);
+		}
+		cout << list;
+
+		cout << "\n..........使用迭代器进行遍历.............\n";
+		for (MyList<int>::iterator it = list.begin(); it != list.end(); it++) {
+			cout << *it << endl;
+		}
+	}
+*/
